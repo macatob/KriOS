@@ -1,1 +1,1 @@
-..\z_tools\imgtol.com w a: krios.img
+tolset\z_tools\imgtol.com w a: krios.img

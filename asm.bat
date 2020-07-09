@@ -1,1 +1,0 @@
-tolset\z_tools\nask.exe kiros.nas kiros.img

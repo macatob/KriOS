@@ -20,7 +20,7 @@
     DW 2
     DD 0
     DD 2880
-    DB 0,0,0X29
+    DB 0,0,0x29
     DD 0xffffffff
     DB "KRIOSBOOT  "
     DB "FAT12   "
@@ -35,7 +35,7 @@ entry:
     MOV DS,AX
     MOV ES,AX
 
-    MOV SI,meg
+    MOV SI,msg
 putloop:
     MOV AL,[SI]
     ADD SI,1
@@ -51,7 +51,11 @@ fin:
     JMP fin
 
 msg:
-    DB 0x0A, 0x0a
+    DB 0x0a, 0x0a
     DB "Hello,world"
     DB 0x0a
     DB 0
+
+    RESB 0x7dfe-$
+
+    DB 0x55,0xaa

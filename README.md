@@ -1,4 +1,7 @@
 # KriOS
+## Ver 0.0.4
+* 修复 ipl的填充Bug
+* 修复 Makfile的路径Bug
 ## Ver 0.0.3
 * 新增 使用Makefile构建系统
 ## Ver 0.0.2

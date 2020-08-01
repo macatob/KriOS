@@ -1,61 +1,82 @@
-; kri-os
+; kri-os-boot
 ; Tab=4
 
-    ORG 0x7c00
+    org 0x7c00
 
 ; 以下为标准FAT12专用code
 
-    JMP entry
-    DB 0x90
-    DB "HELLOKRI"
-    DW 512
-    DB 1
-    DW 1
-    DB 2
-    DW 224
-    DW 2880
-    DB 0xf0
-    DW 9
-    DW 18
-    DW 2
-    DD 0
-    DD 2880
-    DB 0,0,0x29
-    DD 0xffffffff
-    DB "KRIOSBOOT  "
-    DB "FAT12   "
-    RESB 18
+    jmp entry
+    db 0x90
+    db "KRIOSBYY"
+    dw 512
+    db 1
+    dw 1
+    db 2
+    dw 224
+    dw 2880
+    db 0xf0
+    dw 9
+    dw 18
+    dw 2
+    dd 0
+    dd 2880
+    db 0,0,0x29
+    dd 0xffffffff
+    db "KRIOSFSTART"
+    db "FAT12   "
+    resb 18
 
 ; 程序核心
 
 entry:
-    MOV AX,0
-    MOV SS,AX
-    MOV SP,0x7c00
-    MOV DS,AX
-    MOV ES,AX
+    mov ax, 0   ;初始化
+    mov es, 0
+    mov sp, 0x7c00
+    mov ds, ax
 
-    MOV SI,msg
-putloop:
-    MOV AL,[SI]
-    ADD SI,1
-    CMP AL,0
+    mov ax, 0x0820
+    mov es, ax
+    mov ch, 0
+    mov dh, 0
+    mov cl, 2
 
-    JE fin
-    MOV AH,0x0e
-    MOV BX,15
-    INT 0x10
-    JMP putloop
+    mov si, 0
+retry:
+    mov ah, 0x02    ;读盘模式
+    mov ah, 1
+    mov bx, 0
+    mov dl, 0x00
+    int 0x13
+    jnc fin
+    add si, 1
+    cmp si, 5
+    jae error
+    mov ah, 0x00
+    mov dl, 0x00
+    int 0x13
+    jmp retry
+
 fin:
-    HLT
-    JMP fin
+    hlt
+    jmp $
 
+error:
+    mov si, msg
+putloop:
+    mov al, [si]
+    add si, 1
+    cmp al, 0
+    je fin
+    mov ah, 0x0e
+    mov bx, 15
+    int 0x10
+    jmp putloop
 msg:
-    DB 0x0a, 0x0a
-    DB "Hello,world"
-    DB 0x0a
-    DB 0
+    db 0x0a, 0x0a
+    db "load error"
+    db 0x0a
+    db 0
 
-    RESB 0x7dfe-$
+    resb 0x7dfe-$
 
-    DB 0x55,0xaa
+    db 0x55,0xaa

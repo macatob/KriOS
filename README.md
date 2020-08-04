@@ -1,5 +1,9 @@
 # KriOS
 
+## Ver 0.0.4.3
+
+* **新增** kernel's boot information
+
 ## Ver 0.0.4.2
 
 * **修复** make.bat的文件路径问题

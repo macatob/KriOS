@@ -1,7 +1,7 @@
 ; kri-os-boot
 ; Tab=4
 
-cyls equ 10
+CYLS equ 10
 
     org 0x7c00
 
@@ -71,12 +71,12 @@ next:
     jb readloop
     mov dh, 0
     add ch, 1
-    cmp ch, cyls    
+    cmp ch, CYLS    
     jb readloop
 
-fin:
-    hlt
-    jmp fin
+;向系统内核跳转
+    mov [0x0ff0], ch
+    jmp 0xc200
 
 error:
     mov si, msg
@@ -89,6 +89,11 @@ putloop:
     mov bx, 15
     int 0x10
     jmp putloop
+
+fin:
+    hlt
+    jmp fin
+
 msg:
     db 0x0a, 0x0a
     db "load error"

@@ -41,7 +41,4 @@ clean:
 	-$(DEL) ipl.lst
 	-$(DEL) krios.sys
 	-$(DEL) krios.lst
-
-src_only:
-	$(MAKE) clean
 	-$(DEL) krios.img

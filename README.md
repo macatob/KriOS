@@ -1,5 +1,10 @@
 # KriOS
 
+## Ver 0.0.5
+
+* **新增** 32位的c内核
+* **新增** 基于asm的lib
+
 ## Ver 0.0.4.3
 
 * **新增** kernel's boot information

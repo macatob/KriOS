@@ -1,23 +1,54 @@
 TOOLPATH = ../z_tools/
-MAKE = $(TOOLPATH)make.exe -r
-NASK = $(TOOLPATH)nask.exe
-EDIMG = $(TOOLPATH)edimg.exe
-IMGTOL = $(TOOLPATH)imgtol.com
-COPY = copy
-DEL = del
+INCPATH = ../z_tools/haribote
 
+MAKE	 = $(TOOLPATH)make.exe -r
+NASK 	 = $(TOOLPATH)nask.exe
+CC1 	 = $(TOOLPATH)cc1.exe -I$(INCPATH) -Os -Wall -quiet
+GAS2NASK = $(TOOLPATH)gas2nask.exe -a
+OBJ2BIM  = $(TOOLPATH)obj2bim.exe
+BIM2HRB  = $(TOOLPATH)bim2hrb.exe
+RULEFILE = $(TOOLPATH)haribote/haribote.rul
+EDIMG	 = $(TOOLPATH)edimg.exe
+IMGTOL 	 = $(TOOLPATH)imgtol.com
+COPY 	 = copy
+DEL		 = del
 
-default:
+# 默认操作
+
+default :
 	$(MAKE) img
 
+# 生成规则
 
-ipl.bin: ipl.nas Makefile
+ipl.bin : ipl.nas Makefile
 	$(NASK) ipl.nas ipl.bin ipl.lst
 
-krios.sys: krios.nas Makefile
-	$(NASK) krios.nas krios.sys krios.lst
+head.bin : head.nas Makefile
+	$(NASK) head.nas head.bin head.lst
 
-krios.img: ipl.bin krios.sys Makefile
+asmlib.obj : asmlib.nas Makefile
+	$(NASK) asmlib.nas asmlib.obj asmlib.lst
+
+bootpack.gas : bootpack.c Makefile
+	$(CC1) -o bootpack.gas bootpack.c
+
+bootpack.nas : bootpack.gas Makefile
+	$(GAS2NASK) bootpack.gas bootpack.nas
+
+bootpack.obj : bootpack.nas Makefile
+	$(NASK) bootpack.nas bootpack.obj bootpack.lst
+
+bootpack.bim : bootpack.obj asmlib.obj Makefile
+	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+		bootpack.obj asmlib.obj
+
+bootpack.hrb : bootpack.bim Makefile
+	$(BIM2HRB) bootpack.bim bootpack.hrb 0
+
+krios.sys : head.bin bootpack.hrb Makefile
+	copy /B head.bin+bootpack.hrb krios.sys
+
+krios.img : ipl.bin krios.sys Makefile
 	$(EDIMG) imgin:../z_tools/fdimg0at.tek \
 		wbinimg src:ipl.bin len:512 from:0 to:0 \
 		copy from:krios.sys to:@: \
@@ -37,8 +68,13 @@ install:
 	$(IMGTOL) w a: krios.img
 
 clean:
-	-$(DEL) ipl.bin
-	-$(DEL) ipl.lst
+	-$(DEL) *.bin
+	-$(DEL) *.lst
+	-$(DEL) *.gas
+	-$(DEL) *.obj
+	-$(DEL) bootpack.nas
+	-$(DEL) bootpack.map
+	-$(DEL) bootpack.bim
+	-$(DEL) bootpack.hrb
 	-$(DEL) krios.sys
-	-$(DEL) krios.lst
 	-$(DEL) krios.img

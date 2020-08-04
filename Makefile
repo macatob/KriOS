@@ -3,8 +3,8 @@ MAKE = $(TOOLPATH)make.exe -r
 NASK = $(TOOLPATH)nask.exe
 EDIMG = $(TOOLPATH)edimg.exe
 IMGTOL = $(TOOLPATH)imgtol.com
-COPY = COPY
-DEL = DEL
+COPY = copy
+DEL = del
 
 
 default:
@@ -14,13 +14,15 @@ default:
 ipl.bin: ipl.nas Makefile
 	$(NASK) ipl.nas ipl.bin ipl.lst
 
-krios.img: ipl.bin Makefile
+krios.sys: krios.nas Makefile
+	$(NASK) krios.nas krios.sys krios.lst
+
+krios.img: ipl.bin krios.sys Makefile
 	$(EDIMG) imgin:../z_tools/fdimg0at.tek \
-		wbinimg src:ipl.bin len:512 from:0 to:0 imgout :krios.img
+		wbinimg src:ipl.bin len:512 from:0 to:0 \
+		copy from:krios.sys to:@: \
+		imgout:krios.img
 
-
-asm:
-	$(MAKE) ipl.bin
 
 img:
 	$(MAKE) krios.img
@@ -37,6 +39,8 @@ install:
 clean:
 	-$(DEL) ipl.bin
 	-$(DEL) ipl.lst
+	-$(DEL) krios.sys
+	-$(DEL) krios.lst
 
 src_only:
 	$(MAKE) clean

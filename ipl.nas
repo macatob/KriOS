@@ -1,6 +1,8 @@
 ; kri-os-boot
 ; Tab=4
 
+cyls equ 10
+
     org 0x7c00
 
 ; 以下为标准FAT12专用code
@@ -30,7 +32,7 @@
 
 entry:
     mov ax, 0   ;初始化
-    mov es, 0
+    mov ss, ax
     mov sp, 0x7c00
     mov ds, ax
 
@@ -39,15 +41,15 @@ entry:
     mov ch, 0
     mov dh, 0
     mov cl, 2
-
+readloop:
     mov si, 0
 retry:
     mov ah, 0x02    ;读盘模式
-    mov ah, 1
+    mov al, 1
     mov bx, 0
     mov dl, 0x00
     int 0x13
-    jnc fin
+    jnc next
     add si, 1
     cmp si, 5
     jae error
@@ -56,9 +58,25 @@ retry:
     int 0x13
     jmp retry
 
+next:
+    mov ax, es
+    add ax, 0x0020
+    mov es, ax
+    add cl, 1
+    cmp cl,18
+    jbe readloop
+    mov cl, 1
+    add dh, 1
+    cmp dh, 2
+    jb readloop
+    mov dh, 0
+    add ch, 1
+    cmp ch, cyls    
+    jb readloop
+
 fin:
     hlt
-    jmp $
+    jmp fin
 
 error:
     mov si, msg

@@ -8,9 +8,9 @@ DSKCAC0 equ 0x00008000
 ;boot_info
 CYLS    equ 0x0ff0  ;设定启动区
 LEDS    equ 0x0ff1
-VMODE   equ 0x0ff4
+VMODE   equ 0x0ff2
 SCRNX   equ 0x0ff4  ;screen x
-SCRNY   equ 0x0ff8  ;screen y
+SCRNY   equ 0x0ff6  ;screen y
 VRAM    equ 0x0ff8  ;图像缓冲区
 
     org 0xc200

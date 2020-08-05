@@ -1,5 +1,5 @@
 TOOLPATH = ../z_tools/
-INCPATH = ../z_tools/haribote
+INCPATH = ../z_tools/haribote/
 
 MAKE	 = $(TOOLPATH)make.exe -r
 NASK 	 = $(TOOLPATH)nask.exe
